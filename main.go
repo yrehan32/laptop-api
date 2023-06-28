@@ -1,7 +1,9 @@
 package main
 
 import (
+	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gitlab.com/yrehan32/laptop-api/controllers"
@@ -17,6 +19,9 @@ func init() {
 
 func main() {
 	r := gin.Default()
+
+	// validate the domain
+	r.Use(ValidateDomainMiddleware(os.Getenv("HOST")))
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -40,4 +45,21 @@ func main() {
 	r.DELETE("/laptop/:id", middleware.RequireAuth, controllers.DeleteLaptop)
 	
 	r.Run(os.Getenv("HOST") + ":" + os.Getenv("PORT"))
+}
+
+// validates the incoming request's domain
+func ValidateDomainMiddleware(allowedDomain string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		host := c.Request.Host
+		if !strings.Contains(host, allowedDomain) {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": true,
+				"message": "Please use the correct domain",
+				"data": nil,
+			})
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
 }

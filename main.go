@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"gitlab.com/yrehan32/laptop-api/controllers"
 	"gitlab.com/yrehan32/laptop-api/initializers"
@@ -37,5 +39,5 @@ func main() {
 	r.PUT("/laptop/:id", middleware.RequireAuth, controllers.UpdateLaptop)
 	r.DELETE("/laptop/:id", middleware.RequireAuth, controllers.DeleteLaptop)
 	
-	r.Run() // listen and serve on 0.0.0.0:8080
+	r.Run(os.Getenv("HOST") + ":" + os.Getenv("PORT"))
 }

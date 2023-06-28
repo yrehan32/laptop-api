@@ -16,6 +16,14 @@ func init() {
 func main() {
 	r := gin.Default()
 
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"error": false,
+			"message": "Welcome to Laptop API",
+			"data": nil,
+		})
+	})
+	
 	r.POST("/signup", controllers.SignUp)
 	r.POST("/login", controllers.Login)
 
